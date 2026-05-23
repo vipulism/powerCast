@@ -18,6 +18,7 @@ Recommended NestJS modules:
 - Usage module for Grid/DG API integration
 - Analyzer module for simple rules
 - Notification module for Telegram alerts
+- Alerts module for high-usage and DG alerts
 
 ## Database decision
 
@@ -32,6 +33,33 @@ For duplicate prevention or operational tracking, the app may later use a small 
 ```
 
 A real database can be added later when dashboard charts, trend history, multi-flat support, recharge ledger, or billing analysis are introduced.
+
+## Current flow
+
+```text
+Open-Meteo Weather API
+        |
+        v
+WeatherModule
+        |
+        +--------------------------+
+                                   |
+Power Monthly Chart API            |
+        |                          |
+        v                          v
+UsageModule ----------------> SummaryModule
+                                   |
+                                   v
+                             AnalyzerModule
+                                   |
+                    +--------------+--------------+
+                    |                             |
+                    v                             v
+              Telegram Summary              AlertsModule
+                    |                             |
+                    v                             v
+       Scheduled / On-demand message       GET /api/alerts/today
+```
 
 ## Inputs
 
@@ -107,9 +135,32 @@ Phase 1 combines weather, usage and analyzer output into a single endpoint:
 
 ```text
 GET /api/summary/today
+POST /api/summary/today/send
 ```
 
-This endpoint is the base for on-demand updates and future Telegram summaries.
+`GET /api/summary/today` returns the combined weather, usage and analysis response.
+
+`POST /api/summary/today/send` sends the current summary to Telegram on demand.
+
+## Alerts endpoint
+
+Phase 1 exposes alert rules through:
+
+```text
+GET /api/alerts/today
+```
+
+Current alert rules:
+
+| Rule | Code | Severity |
+|---|---|---|
+| `maxTempC >= 38` | `hot-day` | `warning` |
+| `gridUnits >= 20` | `high-grid-usage` | `warning` |
+| `totalUnits >= 25` | `high-total-usage` | `critical` |
+| `dgUnits > 0` | `dg-used` | `info` |
+| `dgUnits >= 1` | `high-dg-usage` | `critical` |
+
+These rules are intentionally simple for Phase 1. Later phases can make thresholds configurable and compare usage against historical baseline.
 
 ## Daily summary
 
