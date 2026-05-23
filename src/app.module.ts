@@ -8,6 +8,7 @@ import { AnalyzerModule } from './modules/analyzer/analyzer.module';
 import { SummaryModule } from './modules/summary/summary.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
 import { AlertsModule } from './modules/alerts/alerts.module';
+import { TelegramPollingModule } from './modules/telegram-polling/telegram-polling.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AlertsModule } from './modules/alerts/alerts.module';
     SummaryModule,
     SchedulerModule,
     AlertsModule,
+    TelegramPollingModule,
   ],
 })
 export class AppModule {}

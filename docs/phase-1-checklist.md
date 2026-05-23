@@ -19,6 +19,7 @@ This checklist tracks the current PowerCast Phase 1 status and what remains befo
 - [x] Alerts included in summary response
 - [x] Alerts included in Telegram summary
 - [x] Configurable alert thresholds
+- [x] Telegram command polling
 - [x] Basic request validation for monthly usage
 - [x] Basic service logging
 - [x] API documentation
@@ -34,6 +35,31 @@ GET  /api/summary/today
 POST /api/summary/today/send
 GET  /api/alerts/today
 ```
+
+## Telegram commands
+
+PowerCast uses Telegram long polling so the homelab does not need a public webhook URL.
+
+Supported commands:
+
+```text
+/summary
+/weather
+/usage
+/alerts
+/help
+/start
+```
+
+Polling defaults:
+
+```env
+TELEGRAM_POLLING_ENABLED=true
+TELEGRAM_POLLING_INTERVAL_MS=30000
+TELEGRAM_POLLING_TIMEOUT_SECONDS=30
+```
+
+Only `TELEGRAM_CHAT_ID` is allowed to run commands. Unknown chats are ignored.
 
 ## Current runtime flow
 
@@ -52,6 +78,7 @@ SummaryModule
           +--> AnalyzerModule
           +--> AlertsModule
           +--> Telegram message formatter
+          +--> Telegram command polling
 ```
 
 ## Required GitHub Secrets
@@ -75,6 +102,9 @@ POWER_API_CONSUMER_ID
 POWER_API_FLAT_NUMBER
 DEPLOY_PATH
 APP_PORT
+TELEGRAM_POLLING_ENABLED
+TELEGRAM_POLLING_INTERVAL_MS
+TELEGRAM_POLLING_TIMEOUT_SECONDS
 DAILY_SUMMARY_ENABLED
 DAILY_SUMMARY_CRON
 DAILY_SUMMARY_TIMEZONE
@@ -96,29 +126,28 @@ curl -X POST http://localhost:61209/api/summary/today/send
 curl http://localhost:61209/api/alerts/today
 ```
 
+Telegram verification:
+
+```text
+/summary
+/weather
+/usage
+/alerts
+/help
+```
+
 ## Known limitations
 
 - No database in Phase 1.
 - No historical trend analysis yet.
 - Alert thresholds are static configuration values, not baseline-based.
-- Telegram bot currently sends messages only through scheduled or on-demand API flow.
-- No Telegram command listener yet.
+- Telegram bot uses polling instead of webhook to avoid public exposure.
+- Telegram command replies can have up to polling interval delay.
 - No UI dashboard yet.
 - No recharge ledger yet.
 - No society maintenance or fixed charge calculation yet.
 
 ## Suggested next phases
-
-### Phase 1.5: On-demand controls
-
-- Telegram commands:
-  - `/summary`
-  - `/weather`
-  - `/usage`
-  - `/alerts`
-  - `/help`
-- Optional protected manual job endpoint.
-- Better Telegram message formatting.
 
 ### Phase 2: Smarter alerts
 
