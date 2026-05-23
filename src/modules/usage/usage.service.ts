@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { MonthlyUsageSummary, PowerSummary } from '../../types';
 
 interface PowerApiMonthlyResponse {
-  date?: string[];
+  date?: Array<number | string>;
   grid?: Array<number | string | null>;
   dg?: Array<number | string | null>;
 }
@@ -54,7 +54,7 @@ export class UsageService {
       const dgUnits = this.toNumberOrNull(dg[index]);
 
       return {
-        date,
+        date: this.normalizeDate(month, date),
         gridUnits,
         dgUnits,
         totalUnits: this.sumNullable(gridUnits, dgUnits),
@@ -75,6 +75,22 @@ export class UsageService {
       year: 'numeric',
       month: '2-digit',
     }).format(new Date());
+  }
+
+  private normalizeDate(month: string, dayValue: number | string): string {
+    const dayText = String(dayValue).trim();
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dayText)) {
+      return dayText;
+    }
+
+    const dayNumber = Number(dayText);
+
+    if (!Number.isFinite(dayNumber)) {
+      return dayText;
+    }
+
+    return `${month}-${String(dayNumber).padStart(2, '0')}`;
   }
 
   private toNumberOrNull(value: number | string | null | undefined): number | null {
