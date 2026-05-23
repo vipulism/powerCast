@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HealthModule } from './modules/health/health.module';
 import { WeatherModule } from './modules/weather/weather.module';
-import { PowerModule } from './modules/power/power.module';
+import { UsageModule } from './modules/usage/usage.module';
 import { AnalyzerModule } from './modules/analyzer/analyzer.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { JobsModule } from './modules/jobs/jobs.module';
@@ -14,7 +14,7 @@ import { JobsModule } from './modules/jobs/jobs.module';
     ScheduleModule.forRoot(),
     HealthModule,
     WeatherModule,
-    PowerModule,
+    UsageModule,
     AnalyzerModule,
     NotificationsModule,
     JobsModule,
