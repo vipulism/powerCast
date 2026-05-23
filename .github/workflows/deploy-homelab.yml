@@ -1,0 +1,58 @@
+name: Deploy to Homelab
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy PowerCast
+    runs-on: [self-hosted, linux, homelab, powercast]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show deployment context
+        run: |
+          echo "Deploying PowerCast"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+
+      - name: Prepare deployment directory
+        run: |
+          mkdir -p "${{ vars.DEPLOY_PATH }}"
+
+      - name: Create runtime env file
+        run: |
+          cat > .env <<'EOF'
+          NODE_ENV=${{ vars.NODE_ENV }}
+          WEATHER_PROVIDER=${{ vars.WEATHER_PROVIDER }}
+          LOCATION_NAME=${{ vars.LOCATION_NAME }}
+          LOCATION_LAT=${{ vars.LOCATION_LAT }}
+          LOCATION_LON=${{ vars.LOCATION_LON }}
+          POWER_API_BASE_URL=${{ vars.POWER_API_BASE_URL }}
+          POWER_API_MONTHLY_CHART_PATH=${{ vars.POWER_API_MONTHLY_CHART_PATH }}
+          POWER_API_CONSUMER_ID=${{ vars.POWER_API_CONSUMER_ID }}
+          POWER_API_FLAT_NUMBER=${{ vars.POWER_API_FLAT_NUMBER }}
+          APP_PORT=${{ vars.APP_PORT }}
+          TELEGRAM_ENABLED=true
+          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
+          DATABASE_URL=file:./data/powercast.db
+          EOF
+
+      - name: Sync files to deploy path
+        run: |
+          rsync -av --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='data' \
+            ./ "${{ vars.DEPLOY_PATH }}/"
+
+      - name: Deployment placeholder
+        run: |
+          echo "Deployment files synced to ${{ vars.DEPLOY_PATH }}"
+          echo "Docker Compose deployment will be enabled after app skeleton is added."
