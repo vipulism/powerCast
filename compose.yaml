@@ -1,0 +1,13 @@
+services:
+  powercast:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: powercast
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT:-61209}:61209"
+    volumes:
+      - ./data:/app/data
