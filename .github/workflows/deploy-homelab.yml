@@ -50,7 +50,8 @@ jobs:
             --exclude='data' \
             ./ "${{ vars.DEPLOY_PATH }}/"
 
-      - name: Deployment placeholder
+      - name: Deploy with Docker Compose
         run: |
-          echo "Deployment files synced to ${{ vars.DEPLOY_PATH }}"
-          echo "Docker Compose deployment will be enabled after app skeleton is added."
+          cd "${{ vars.DEPLOY_PATH }}"
+          docker compose up -d --build
+          docker compose ps
