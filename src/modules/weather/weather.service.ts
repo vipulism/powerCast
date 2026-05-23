@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WeatherSummary } from '../../types';
 
@@ -19,6 +19,8 @@ interface OpenMeteoDailyResponse {
 
 @Injectable()
 export class WeatherService {
+  private readonly logger = new Logger(WeatherService.name);
+
   constructor(private readonly configService: ConfigService) {}
 
   async getTodayWeather(): Promise<WeatherSummary> {
@@ -28,6 +30,8 @@ export class WeatherService {
     const longitude = this.configService.get<string>('LOCATION_LON');
 
     if (!latitude || !longitude) {
+      this.logger.warn('LOCATION_LAT or LOCATION_LON is missing.');
+
       return {
         location: locationName,
         maxTempC: null,
@@ -50,6 +54,7 @@ export class WeatherService {
     const response = await fetch(url);
 
     if (!response.ok) {
+      this.logger.error(`Open-Meteo request failed with status ${response.status}`);
       throw new Error(`Open-Meteo request failed with status ${response.status}`);
     }
 

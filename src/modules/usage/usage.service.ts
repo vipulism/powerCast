@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MonthlyUsageSummary, PowerSummary } from '../../types';
 
@@ -10,6 +10,8 @@ interface PowerApiMonthlyResponse {
 
 @Injectable()
 export class UsageService {
+  private readonly logger = new Logger(UsageService.name);
+
   constructor(private readonly configService: ConfigService) {}
 
   async getTodayPowerUsage(): Promise<PowerSummary> {
@@ -34,6 +36,7 @@ export class UsageService {
     const monthlyPath = this.configService.get<string>('POWER_API_MONTHLY_CHART_PATH', '');
 
     if (!consumerId || !baseUrl || !monthlyPath) {
+      this.logger.error('Power API configuration is missing.');
       throw new Error('Power API configuration is missing');
     }
 
@@ -41,6 +44,7 @@ export class UsageService {
     const response = await fetch(url);
 
     if (!response.ok) {
+      this.logger.error(`Power API request failed with status ${response.status}`);
       throw new Error(`Power API request failed with status ${response.status}`);
     }
 
@@ -48,6 +52,10 @@ export class UsageService {
     const dates = data.date ?? [];
     const grid = data.grid ?? [];
     const dg = data.dg ?? [];
+
+    if (dates.length === 0) {
+      this.logger.warn(`Power API returned no dates for month ${month}.`);
+    }
 
     const days = dates.map((date, index) => {
       const gridUnits = this.toNumberOrNull(grid[index]);
@@ -87,6 +95,7 @@ export class UsageService {
     const dayNumber = Number(dayText);
 
     if (!Number.isFinite(dayNumber)) {
+      this.logger.warn(`Could not normalize date value: ${dayText}`);
       return dayText;
     }
 
