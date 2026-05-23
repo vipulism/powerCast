@@ -1,0 +1,29 @@
+export interface WeatherSummary {
+  location: string;
+  provider: string;
+  currentTempC: number | null;
+  maxTempC: number | null;
+  minTempC: number | null;
+  humidity: number | null;
+  condition: string;
+}
+
+export interface PowerSummary {
+  consumerId: string;
+  flatNumber: string;
+  date: string | null;
+  gridUnits: number | null;
+  dgUnits: number | null;
+  totalUnits: number | null;
+}
+
+export interface AnalysisResult {
+  status: 'normal' | 'hot-day' | 'high-usage' | 'dg-used' | 'unknown';
+  observations: string[];
+}
+
+export interface DailySummary {
+  weather: WeatherSummary;
+  power: PowerSummary;
+  analysis: AnalysisResult;
+}
