@@ -58,6 +58,25 @@ Required fields:
 - Total units
 - Raw API response snapshot if needed for debugging
 
+## Weather endpoint
+
+Phase 1 now exposes an Open-Meteo backed endpoint:
+
+```text
+GET /api/weather/today
+```
+
+It uses these variables:
+
+```env
+WEATHER_PROVIDER=open-meteo
+LOCATION_NAME=Ghaziabad
+LOCATION_LAT=
+LOCATION_LON=
+```
+
+`LOCATION_LAT` and `LOCATION_LON` must be set in GitHub repository variables and local `.env` before the endpoint can return live weather data.
+
 ## Daily summary
 
 Example:
