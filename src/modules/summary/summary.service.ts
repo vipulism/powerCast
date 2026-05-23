@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AlertsService } from '../alerts/alerts.service';
 import { AnalyzerService } from '../analyzer/analyzer.service';
 import { TelegramService } from '../telegram/telegram.service';
 import { UsageService } from '../usage/usage.service';
@@ -12,14 +13,16 @@ export class SummaryService {
     private readonly usageService: UsageService,
     private readonly analyzerService: AnalyzerService,
     private readonly telegramService: TelegramService,
+    private readonly alertsService: AlertsService,
   ) {}
 
   async getTodaySummary(): Promise<DailySummary> {
     const weather = await this.weatherService.getTodayWeather();
     const power = await this.usageService.getTodayPowerUsage();
     const analysis = this.analyzerService.analyze(weather, power);
+    const alerts = this.alertsService.buildAlerts({ weather, power, analysis } as DailySummary);
 
-    return { weather, power, analysis };
+    return { weather, power, analysis, alerts };
   }
 
   async sendTodaySummary() {
@@ -31,8 +34,11 @@ export class SummaryService {
   }
 
   private formatTelegramMessage(summary: DailySummary): string {
-    const { weather, power, analysis } = summary;
+    const { weather, power, analysis, alerts } = summary;
     const observations = analysis.observations.map((item) => `- ${item}`).join('\n');
+    const alertLines = alerts.hasAlerts
+      ? alerts.alerts.map((alert) => `- [${alert.severity}] ${alert.title}: ${alert.message}`).join('\n')
+      : '- No alerts for now.';
 
     return [
       'PowerCast Daily Summary',
@@ -47,6 +53,9 @@ export class SummaryService {
       `DG: ${this.formatValue(power.dgUnits, 'units')}`,
       `Total: ${this.formatValue(power.totalUnits, 'units')}`,
       `Date: ${power.date ?? 'unknown'}`,
+      '',
+      'Alerts:',
+      alertLines,
       '',
       'Observation:',
       observations,

@@ -55,4 +55,5 @@ export interface DailySummary {
   weather: WeatherSummary;
   power: PowerSummary;
   analysis: AnalysisResult;
+  alerts: AlertsSummary;
 }
