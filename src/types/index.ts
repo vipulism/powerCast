@@ -17,6 +17,20 @@ export interface PowerSummary {
   totalUnits: number | null;
 }
 
+export interface MonthlyUsageDay {
+  date: string;
+  gridUnits: number | null;
+  dgUnits: number | null;
+  totalUnits: number | null;
+}
+
+export interface MonthlyUsageSummary {
+  consumerId: string;
+  flatNumber: string;
+  month: string;
+  days: MonthlyUsageDay[];
+}
+
 export interface AnalysisResult {
   status: 'normal' | 'hot-day' | 'high-usage' | 'dg-used' | 'unknown';
   observations: string[];

@@ -15,7 +15,7 @@ Recommended NestJS modules:
 - Config module for environment variables
 - Schedule module for daily jobs
 - Weather module for Open-Meteo integration
-- Power module for Grid/DG API integration
+- Usage module for Grid/DG API integration
 - Analyzer module for simple rules
 - Notification module for Telegram alerts
 
@@ -60,7 +60,7 @@ Required fields:
 
 ## Weather endpoint
 
-Phase 1 now exposes an Open-Meteo backed endpoint:
+Phase 1 exposes an Open-Meteo backed endpoint:
 
 ```text
 GET /api/weather/today
@@ -76,6 +76,30 @@ LOCATION_LON=
 ```
 
 `LOCATION_LAT` and `LOCATION_LON` must be set in GitHub repository variables and local `.env` before the endpoint can return live weather data.
+
+## Usage endpoints
+
+Phase 1 exposes power usage endpoints backed by the monthly chart API:
+
+```text
+GET /api/usage/today
+GET /api/usage/monthly?month=2026-05
+```
+
+They use these variables:
+
+```env
+POWER_API_BASE_URL=https://mp.adwards.in
+POWER_API_MONTHLY_CHART_PATH=/Prepaid_data_daily_log_gridHelper/get_daily_chart_data
+POWER_API_CONSUMER_ID=500152051201
+POWER_API_FLAT_NUMBER=1201
+```
+
+Monthly endpoint format:
+
+```text
+{POWER_API_BASE_URL}{POWER_API_MONTHLY_CHART_PATH}/{POWER_API_CONSUMER_ID}/{YYYY-MM}
+```
 
 ## Daily summary
 
