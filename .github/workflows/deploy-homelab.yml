@@ -45,6 +45,10 @@ jobs:
           DAILY_SUMMARY_ENABLED=${{ vars.DAILY_SUMMARY_ENABLED }}
           DAILY_SUMMARY_CRON=${{ vars.DAILY_SUMMARY_CRON }}
           DAILY_SUMMARY_TIMEZONE=${{ vars.DAILY_SUMMARY_TIMEZONE }}
+          ALERT_HOT_DAY_TEMP_C=${{ vars.ALERT_HOT_DAY_TEMP_C }}
+          ALERT_HIGH_GRID_UNITS=${{ vars.ALERT_HIGH_GRID_UNITS }}
+          ALERT_HIGH_TOTAL_UNITS=${{ vars.ALERT_HIGH_TOTAL_UNITS }}
+          ALERT_HIGH_DG_UNITS=${{ vars.ALERT_HIGH_DG_UNITS }}
           DATABASE_URL=file:./data/powercast.db
           EOF
 

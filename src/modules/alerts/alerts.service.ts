@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AlertsSummary, DailySummary, PowerCastAlert } from '../../types';
 
 @Injectable()
 export class AlertsService {
+  constructor(private readonly configService: ConfigService) {}
+
   buildAlerts(summary: DailySummary): AlertsSummary {
     const alerts: PowerCastAlert[] = [];
     const { weather, power } = summary;
+    const thresholds = this.getThresholds();
 
-    if (weather.maxTempC !== null && weather.maxTempC >= 38) {
+    if (weather.maxTempC !== null && weather.maxTempC >= thresholds.hotDayTempC) {
       alerts.push({
         code: 'hot-day',
         severity: 'warning',
@@ -16,7 +20,7 @@ export class AlertsService {
       });
     }
 
-    if (power.gridUnits !== null && power.gridUnits >= 20) {
+    if (power.gridUnits !== null && power.gridUnits >= thresholds.highGridUnits) {
       alerts.push({
         code: 'high-grid-usage',
         severity: 'warning',
@@ -25,7 +29,7 @@ export class AlertsService {
       });
     }
 
-    if (power.totalUnits !== null && power.totalUnits >= 25) {
+    if (power.totalUnits !== null && power.totalUnits >= thresholds.highTotalUnits) {
       alerts.push({
         code: 'high-total-usage',
         severity: 'critical',
@@ -35,7 +39,7 @@ export class AlertsService {
     }
 
     if (power.dgUnits !== null && power.dgUnits > 0) {
-      const highDg = power.dgUnits >= 1;
+      const highDg = power.dgUnits >= thresholds.highDgUnits;
 
       alerts.push({
         code: highDg ? 'high-dg-usage' : 'dg-used',
@@ -50,5 +54,25 @@ export class AlertsService {
       alerts,
       hasAlerts: alerts.length > 0,
     };
+  }
+
+  private getThresholds() {
+    return {
+      hotDayTempC: this.getNumberConfig('ALERT_HOT_DAY_TEMP_C', 38),
+      highGridUnits: this.getNumberConfig('ALERT_HIGH_GRID_UNITS', 20),
+      highTotalUnits: this.getNumberConfig('ALERT_HIGH_TOTAL_UNITS', 25),
+      highDgUnits: this.getNumberConfig('ALERT_HIGH_DG_UNITS', 1),
+    };
+  }
+
+  private getNumberConfig(key: string, fallback: number): number {
+    const rawValue = this.configService.get<string>(key);
+
+    if (rawValue === undefined || rawValue === '') {
+      return fallback;
+    }
+
+    const parsed = Number(rawValue);
+    return Number.isFinite(parsed) ? parsed : fallback;
   }
 }

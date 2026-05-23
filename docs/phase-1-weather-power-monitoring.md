@@ -138,9 +138,9 @@ GET /api/summary/today
 POST /api/summary/today/send
 ```
 
-`GET /api/summary/today` returns the combined weather, usage and analysis response.
+`GET /api/summary/today` returns the combined weather, usage, analysis and alerts response.
 
-`POST /api/summary/today/send` sends the current summary to Telegram on demand.
+`POST /api/summary/today/send` sends the current summary to Telegram on demand. The Telegram message includes an alerts section.
 
 ## Alerts endpoint
 
@@ -150,17 +150,27 @@ Phase 1 exposes alert rules through:
 GET /api/alerts/today
 ```
 
-Current alert rules:
+Current alert rules are configurable through environment variables:
 
-| Rule | Code | Severity |
-|---|---|---|
-| `maxTempC >= 38` | `hot-day` | `warning` |
-| `gridUnits >= 20` | `high-grid-usage` | `warning` |
-| `totalUnits >= 25` | `high-total-usage` | `critical` |
-| `dgUnits > 0` | `dg-used` | `info` |
-| `dgUnits >= 1` | `high-dg-usage` | `critical` |
+| Variable | Default | Code | Severity |
+|---|---:|---|---|
+| `ALERT_HOT_DAY_TEMP_C` | `38` | `hot-day` | `warning` |
+| `ALERT_HIGH_GRID_UNITS` | `20` | `high-grid-usage` | `warning` |
+| `ALERT_HIGH_TOTAL_UNITS` | `25` | `high-total-usage` | `critical` |
+| `ALERT_HIGH_DG_UNITS` | `1` | `high-dg-usage` | `critical` |
 
-These rules are intentionally simple for Phase 1. Later phases can make thresholds configurable and compare usage against historical baseline.
+DG usage greater than zero but below `ALERT_HIGH_DG_UNITS` creates a `dg-used` info alert.
+
+Example values:
+
+```env
+ALERT_HOT_DAY_TEMP_C=38
+ALERT_HIGH_GRID_UNITS=20
+ALERT_HIGH_TOTAL_UNITS=25
+ALERT_HIGH_DG_UNITS=1
+```
+
+These rules are intentionally simple for Phase 1. Later phases can compare usage against historical baseline and weather forecast.
 
 ## Daily summary
 
@@ -172,6 +182,8 @@ Location: Ghaziabad
 Max Temp: 41 C
 Grid Usage: 14.8 units
 DG Usage: 0.7 units
+Alerts:
+- [warning] Hot day detected
 Observation: Hot day. AC usage may be the main reason for higher consumption.
 ```
 
@@ -179,8 +191,8 @@ Observation: Hot day. AC usage may be the main reason for higher consumption.
 
 Initial rules can be simple:
 
-- If max temperature is greater than 38 C, mark the day as hot.
-- If Grid usage is higher than a configurable threshold, mark usage as high.
+- If max temperature is greater than the configured hot-day threshold, mark the day as hot.
+- If Grid usage is higher than the configured Grid threshold, mark usage as high.
 - If DG usage is greater than zero, include DG notice.
 - If weather API or power API fails, send a missing data alert.
 
