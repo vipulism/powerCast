@@ -7,6 +7,7 @@ import { UsageModule } from './modules/usage/usage.module';
 import { AnalyzerModule } from './modules/analyzer/analyzer.module';
 import { SummaryModule } from './modules/summary/summary.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
+import { AlertsModule } from './modules/alerts/alerts.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SchedulerModule } from './modules/scheduler/scheduler.module';
     AnalyzerModule,
     SummaryModule,
     SchedulerModule,
+    AlertsModule,
   ],
 })
 export class AppModule {}

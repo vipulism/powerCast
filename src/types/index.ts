@@ -36,6 +36,21 @@ export interface AnalysisResult {
   observations: string[];
 }
 
+export type AlertSeverity = 'info' | 'warning' | 'critical';
+
+export interface PowerCastAlert {
+  code: string;
+  severity: AlertSeverity;
+  title: string;
+  message: string;
+}
+
+export interface AlertsSummary {
+  date: string | null;
+  alerts: PowerCastAlert[];
+  hasAlerts: boolean;
+}
+
 export interface DailySummary {
   weather: WeatherSummary;
   power: PowerSummary;
