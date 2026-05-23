@@ -101,6 +101,16 @@ Monthly endpoint format:
 {POWER_API_BASE_URL}{POWER_API_MONTHLY_CHART_PATH}/{POWER_API_CONSUMER_ID}/{YYYY-MM}
 ```
 
+## Summary endpoint
+
+Phase 1 combines weather, usage and analyzer output into a single endpoint:
+
+```text
+GET /api/summary/today
+```
+
+This endpoint is the base for on-demand updates and future Telegram summaries.
+
 ## Daily summary
 
 Example:
