@@ -10,5 +10,6 @@ import { SummaryService } from './summary.service';
   imports: [WeatherModule, UsageModule, AnalyzerModule, MessagingModule],
   controllers: [SummaryController],
   providers: [SummaryService],
+  exports: [SummaryService],
 })
 export class SummaryModule {}
