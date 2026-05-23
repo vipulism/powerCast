@@ -46,7 +46,7 @@ export class TelegramService {
     });
 
     if (!response.ok) {
-      throw new Error(`Telegram request failed with status ${response.status}`);
+      throw new Error(`Telegram sendMessage failed with status ${response.status}: ${await this.safeReadBody(response)}`);
     }
 
     return { enabled: true, sent: true };
@@ -70,10 +70,18 @@ export class TelegramService {
     const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error(`Telegram getUpdates failed with status ${response.status}`);
+      throw new Error(`Telegram getUpdates failed with status ${response.status}: ${await this.safeReadBody(response)}`);
     }
 
     const data = (await response.json()) as TelegramUpdatesResponse;
     return data.result ?? [];
+  }
+
+  private async safeReadBody(response: Response): Promise<string> {
+    try {
+      return await response.text();
+    } catch {
+      return 'Unable to read Telegram response body';
+    }
   }
 }
