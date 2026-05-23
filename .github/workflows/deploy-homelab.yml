@@ -1,6 +1,9 @@
 name: Deploy to Homelab
 
 on:
+  push:
+    branches:
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -17,7 +20,7 @@ jobs:
           echo "Deploying PowerCast"
           echo "Branch: ${{ github.ref_name }}"
           echo "Commit: ${{ github.sha }}"
-          echo "This workflow is manual-only for now."
+          echo "Auto deploy is enabled for dev push. Manual run is also supported."
 
       - name: Prepare deployment directory
         run: |
