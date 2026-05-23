@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { SummaryService } from './summary.service';
 
 @Controller('summary')
@@ -8,5 +8,10 @@ export class SummaryController {
   @Get('today')
   getTodaySummary() {
     return this.summaryService.getTodaySummary();
+  }
+
+  @Post('today/send')
+  sendTodaySummary() {
+    return this.summaryService.sendTodaySummary();
   }
 }
