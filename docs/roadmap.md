@@ -13,7 +13,39 @@ Deliverables:
 - Daily summary generation
 - Telegram notifications
 - Basic high usage detection
-- Local storage for historical comparison
+- No full database required initially
+
+## Phase 1.5: On-Demand Updates
+
+Goal: allow the user to request the latest PowerCast summary whenever needed, instead of waiting for the scheduled daily summary.
+
+This should come after Phase 1 because it reuses the same weather client, power client, analyzer and Telegram formatter. It should come before dashboard work because it gives immediate value without building UI.
+
+Deliverables:
+
+- Manual trigger endpoint in NestJS
+- Optional Telegram command support later
+- On-demand latest summary
+- On-demand Grid/DG usage check
+- On-demand weather and power comparison
+- Basic protection so only allowed users/systems can trigger it
+
+Example use cases:
+
+- Someone wants current usage info immediately
+- User wants to check if today is already high usage
+- User wants a quick weather plus power explanation
+- User wants to test Telegram summary without waiting for cron
+
+Possible commands or endpoints:
+
+```text
+GET /summary/today
+POST /jobs/daily-summary/run
+Telegram: /summary
+Telegram: /power
+Telegram: /weather
+```
 
 ## Phase 2: Alerts
 

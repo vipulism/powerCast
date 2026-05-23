@@ -26,7 +26,6 @@ Phase 1 is a monitoring and explanation MVP.
 
 - Fetch Ghaziabad weather data
 - Fetch daily Grid/DG power consumption data
-- Store daily readings
 - Compare temperature vs consumption
 - Send Telegram daily summaries
 - Send basic abnormal usage alerts
@@ -49,13 +48,13 @@ Those are future phases.
 Weather source
     |
     v
-PowerCast Worker ---- Power consumption source
+NestJS PowerCast API/Worker ---- Power consumption source
     |
     v
 Analyzer / Rules Engine
     |
     +--> Telegram Alerts
-    +--> Local Database
+    +--> In-memory or file-based cache for Phase 1
     +--> Dashboard / Home Assistant later
 ```
 
@@ -75,12 +74,19 @@ High temperature day. AC usage likely increased.
 
 ## Suggested tech stack
 
-- Node.js + TypeScript
-- Cron-based worker for Phase 1
-- SQLite or PostgreSQL for local storage
+- NestJS + TypeScript
+- NestJS Schedule for cron jobs
+- NestJS Config for environment variables
+- NestJS HttpModule or fetch for API calls
 - Telegram Bot API for alerts
 - Docker Compose for self-hosting
 - Optional Home Assistant integration later
+
+## Database decision for Phase 1
+
+Phase 1 does not require a full database at the start. The first version can fetch the current month data from the power API and weather provider, calculate the latest daily summary, and send Telegram alerts.
+
+For short-term history or debugging, Phase 1 may use a small JSON file or lightweight local cache. A real database such as SQLite or PostgreSQL can be introduced in a later phase when trend analysis, dashboards, and billing ledger features need persistent history.
 
 ## Repository structure
 
@@ -105,4 +111,4 @@ This is a public repository. Do not commit real API keys, Telegram bot tokens, s
 
 ## Current status
 
-Planning and architecture documentation started. Implementation will begin with Phase 1: Weather + Power Monitoring.
+Planning and architecture documentation started. Implementation will begin with Phase 1: NestJS Weather + Power Monitoring.
