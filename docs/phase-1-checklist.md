@@ -20,6 +20,7 @@ This checklist tracks the current PowerCast Phase 1 status and what remains befo
 - [x] Alerts included in Telegram summary
 - [x] Configurable alert thresholds
 - [x] Telegram command polling
+- [x] Home Assistant friendly status endpoint
 - [x] Basic request validation for monthly usage
 - [x] Basic service logging
 - [x] API documentation
@@ -34,6 +35,7 @@ GET  /api/usage/monthly?month=YYYY-MM
 GET  /api/summary/today
 POST /api/summary/today/send
 GET  /api/alerts/today
+GET  /api/status/home-assistant
 ```
 
 ## Telegram commands
@@ -79,6 +81,7 @@ SummaryModule
           +--> AlertsModule
           +--> Telegram message formatter
           +--> Telegram command polling
+          +--> Home Assistant status endpoint
 ```
 
 ## Required GitHub Secrets
@@ -124,6 +127,7 @@ curl "http://localhost:61209/api/usage/monthly?month=2026-05"
 curl http://localhost:61209/api/summary/today
 curl -X POST http://localhost:61209/api/summary/today/send
 curl http://localhost:61209/api/alerts/today
+curl http://localhost:61209/api/status/home-assistant
 ```
 
 Telegram verification:
@@ -158,8 +162,8 @@ Telegram verification:
 
 ### Phase 3: Dashboard and Home Assistant
 
-- Dashboard summary cards.
 - Home Assistant REST sensors.
+- Dashboard summary cards.
 - Optional MQTT publishing.
 - Monthly charts.
 

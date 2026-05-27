@@ -57,3 +57,20 @@ export interface DailySummary {
   analysis: AnalysisResult;
   alerts: AlertsSummary;
 }
+
+export interface HomeAssistantStatus {
+  date: string | null;
+  location: string;
+  currentTempC: number | null;
+  maxTempC: number | null;
+  minTempC: number | null;
+  humidity: number | null;
+  condition: string;
+  gridUnits: number | null;
+  dgUnits: number | null;
+  totalUnits: number | null;
+  hasAlerts: boolean;
+  alertCount: number;
+  highestSeverity: AlertSeverity | 'none';
+  analysisStatus: AnalysisResult['status'];
+}
