@@ -73,4 +73,9 @@ export interface HomeAssistantStatus {
   alertCount: number;
   highestSeverity: AlertSeverity | 'none';
   analysisStatus: AnalysisResult['status'];
+  isHotDay: boolean;
+  isHighUsage: boolean;
+  isDgUsed: boolean;
+  isCriticalAlert: boolean;
+  alertSummary: string;
 }
