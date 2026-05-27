@@ -1,6 +1,6 @@
 # API Reference
 
-PowerCast exposes a small REST API for Phase 1 monitoring, summaries, alerts, and Telegram delivery.
+PowerCast exposes a small REST API for Phase 1 monitoring, summaries, alerts, Telegram delivery, and Home Assistant integration.
 
 Base URL on homelab:
 
@@ -127,66 +127,12 @@ Returns weather, usage, analysis, and alerts in a single response.
 curl http://localhost:61209/api/summary/today
 ```
 
-Example response:
-
-```json
-{
-  "weather": {
-    "location": "Ghaziabad",
-    "provider": "open-meteo",
-    "currentTempC": 33.6,
-    "maxTempC": 41,
-    "minTempC": 31.8,
-    "humidity": 18,
-    "condition": "clear sky"
-  },
-  "power": {
-    "consumerId": "500152051201",
-    "flatNumber": "1201",
-    "date": "2026-05-24",
-    "gridUnits": 1,
-    "dgUnits": 0,
-    "totalUnits": 1
-  },
-  "analysis": {
-    "status": "hot-day",
-    "observations": [
-      "Hot day detected. AC usage may be higher than usual."
-    ]
-  },
-  "alerts": {
-    "date": "2026-05-24",
-    "alerts": [
-      {
-        "code": "hot-day",
-        "severity": "warning",
-        "title": "Hot day detected",
-        "message": "Max temperature is 41 C. AC usage may be higher than usual."
-      }
-    ],
-    "hasAlerts": true
-  }
-}
-```
-
 ### POST /api/summary/today/send
 
 Sends the current daily summary to Telegram on demand.
 
 ```bash
 curl -X POST http://localhost:61209/api/summary/today/send
-```
-
-Example response:
-
-```json
-{
-  "telegram": {
-    "enabled": true,
-    "sent": true
-  },
-  "summary": {}
-}
 ```
 
 Required secrets:
@@ -206,23 +152,6 @@ Returns alert rules triggered by the current weather and usage summary.
 curl http://localhost:61209/api/alerts/today
 ```
 
-Example response:
-
-```json
-{
-  "date": "2026-05-24",
-  "alerts": [
-    {
-      "code": "hot-day",
-      "severity": "warning",
-      "title": "Hot day detected",
-      "message": "Max temperature is 41 C. AC usage may be higher than usual."
-    }
-  ],
-  "hasAlerts": true
-}
-```
-
 Alert thresholds are configurable:
 
 ```env
@@ -231,6 +160,45 @@ ALERT_HIGH_GRID_UNITS=20
 ALERT_HIGH_TOTAL_UNITS=25
 ALERT_HIGH_DG_UNITS=1
 ```
+
+## Home Assistant
+
+### GET /api/status/home-assistant
+
+Returns a flat response designed for Home Assistant REST sensors and template sensors.
+
+```bash
+curl http://localhost:61209/api/status/home-assistant
+```
+
+Example response:
+
+```json
+{
+  "date": "2026-05-24",
+  "location": "Ghaziabad",
+  "currentTempC": 33.6,
+  "maxTempC": 41,
+  "minTempC": 31.8,
+  "humidity": 18,
+  "condition": "clear sky",
+  "gridUnits": 1,
+  "dgUnits": 0,
+  "totalUnits": 1,
+  "hasAlerts": true,
+  "alertCount": 1,
+  "highestSeverity": "warning",
+  "analysisStatus": "hot-day"
+}
+```
+
+Suggested Home Assistant REST sensor URL:
+
+```text
+http://<powercast-host>:61209/api/status/home-assistant
+```
+
+This endpoint intentionally avoids nested objects so Home Assistant templates stay simple.
 
 ## Scheduled Telegram summary
 
