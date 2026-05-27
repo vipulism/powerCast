@@ -9,6 +9,7 @@ import { SummaryModule } from './modules/summary/summary.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
 import { AlertsModule } from './modules/alerts/alerts.module';
 import { TelegramPollingModule } from './modules/telegram-polling/telegram-polling.module';
+import { StatusModule } from './modules/status/status.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TelegramPollingModule } from './modules/telegram-polling/telegram-polli
     SchedulerModule,
     AlertsModule,
     TelegramPollingModule,
+    StatusModule,
   ],
 })
 export class AppModule {}
