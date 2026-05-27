@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SummaryService } from '../summary/summary.service';
-import { AlertSeverity, HomeAssistantStatus } from '../../types';
+import { AlertSeverity, HomeAssistantStatus, PowerCastAlert } from '../../types';
 
 @Injectable()
 export class StatusService {
@@ -8,7 +8,8 @@ export class StatusService {
 
   async getHomeAssistantStatus(): Promise<HomeAssistantStatus> {
     const summary = await this.summaryService.getTodaySummary();
-    const highestSeverity = this.getHighestSeverity(summary.alerts.alerts.map((alert) => alert.severity));
+    const alerts = summary.alerts.alerts;
+    const highestSeverity = this.getHighestSeverity(alerts.map((alert) => alert.severity));
 
     return {
       date: summary.power.date,
@@ -22,10 +23,23 @@ export class StatusService {
       dgUnits: summary.power.dgUnits,
       totalUnits: summary.power.totalUnits,
       hasAlerts: summary.alerts.hasAlerts,
-      alertCount: summary.alerts.alerts.length,
+      alertCount: alerts.length,
       highestSeverity,
       analysisStatus: summary.analysis.status,
+      isHotDay: alerts.some((alert) => alert.code === 'hot-day'),
+      isHighUsage: alerts.some((alert) => alert.code === 'high-grid-usage' || alert.code === 'high-total-usage'),
+      isDgUsed: alerts.some((alert) => alert.code === 'dg-used' || alert.code === 'high-dg-usage'),
+      isCriticalAlert: highestSeverity === 'critical',
+      alertSummary: this.buildAlertSummary(alerts),
     };
+  }
+
+  private buildAlertSummary(alerts: PowerCastAlert[]): string {
+    if (alerts.length === 0) {
+      return 'No alerts for now';
+    }
+
+    return alerts.map((alert) => alert.title).join(', ');
   }
 
   private getHighestSeverity(severities: AlertSeverity[]): AlertSeverity | 'none' {

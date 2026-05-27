@@ -37,7 +37,12 @@ curl http://localhost:61209/api/status/home-assistant
   "hasAlerts": true,
   "alertCount": 1,
   "highestSeverity": "warning",
-  "analysisStatus": "hot-day"
+  "analysisStatus": "hot-day",
+  "isHotDay": true,
+  "isHighUsage": false,
+  "isDgUsed": false,
+  "isCriticalAlert": false,
+  "alertSummary": "Hot day detected"
 }
 ```
 
@@ -68,6 +73,11 @@ sensor:
       - alertCount
       - highestSeverity
       - analysisStatus
+      - isHotDay
+      - isHighUsage
+      - isDgUsed
+      - isCriticalAlert
+      - alertSummary
 ```
 
 ## Suggested template sensors
@@ -100,6 +110,92 @@ template:
 
       - name: PowerCast Highest Severity
         state: "{{ state_attr('sensor.powercast_status', 'highestSeverity') }}"
+
+      - name: PowerCast Alert Summary
+        state: "{{ state_attr('sensor.powercast_status', 'alertSummary') }}"
+```
+
+## Dashboard card examples
+
+### Entities card
+
+```yaml
+type: entities
+title: PowerCast
+entities:
+  - entity: sensor.powercast_current_temperature
+    name: Current Temp
+  - entity: sensor.powercast_max_temperature
+    name: Max Temp
+  - entity: sensor.powercast_humidity
+    name: Humidity
+  - entity: sensor.powercast_grid_units_today
+    name: Grid Units Today
+  - entity: sensor.powercast_dg_units_today
+    name: DG Units Today
+  - entity: sensor.powercast_total_units_today
+    name: Total Units Today
+  - entity: sensor.powercast_alert_count
+    name: Alert Count
+  - entity: sensor.powercast_highest_severity
+    name: Highest Severity
+  - entity: sensor.powercast_analysis_status
+    name: Analysis Status
+```
+
+### Glance card
+
+```yaml
+type: glance
+title: PowerCast
+entities:
+  - entity: sensor.powercast_current_temperature
+    name: Current
+  - entity: sensor.powercast_max_temperature
+    name: Max
+  - entity: sensor.powercast_grid_units_today
+    name: Grid
+  - entity: sensor.powercast_dg_units_today
+    name: DG
+  - entity: sensor.powercast_total_units_today
+    name: Total
+  - entity: sensor.powercast_alert_count
+    name: Alerts
+```
+
+## Automation examples
+
+### Notify when critical alert is active
+
+```yaml
+automation:
+  - alias: PowerCast Critical Alert
+    trigger:
+      - platform: state
+        entity_id: sensor.powercast_highest_severity
+        to: "critical"
+    action:
+      - service: persistent_notification.create
+        data:
+          title: PowerCast Critical Alert
+          message: "{{ state_attr('sensor.powercast_status', 'alertSummary') }}"
+```
+
+### Notify when DG is used
+
+This uses the raw PowerCast status attributes.
+
+```yaml
+automation:
+  - alias: PowerCast DG Usage Detected
+    trigger:
+      - platform: template
+        value_template: "{{ state_attr('sensor.powercast_status', 'isDgUsed') == true }}"
+    action:
+      - service: persistent_notification.create
+        data:
+          title: PowerCast DG Usage Detected
+          message: "DG usage today: {{ state_attr('sensor.powercast_status', 'dgUnits') }} units"
 ```
 
 ## Notes
