@@ -1,11 +1,35 @@
 # API Reference
 
-PowerCast exposes a small REST API for Phase 1 monitoring, summaries, alerts, Telegram delivery, and Home Assistant integration.
+PowerCast exposes a small REST API for Phase 1 monitoring, summaries, alerts, Telegram delivery, Home Assistant integration, and Swagger/OpenAPI documentation.
 
 Base URL on homelab:
 
 ```text
 http://localhost:61209/api
+```
+
+## Swagger / OpenAPI
+
+### GET /api/docs
+
+Opens Swagger UI in the browser.
+
+```text
+http://localhost:61209/api/docs
+```
+
+On LAN, replace localhost with the PowerCast host IP:
+
+```text
+http://192.168.1.32:61209/api/docs
+```
+
+### GET /api/docs-json
+
+Returns the OpenAPI JSON document.
+
+```bash
+curl http://localhost:61209/api/docs-json
 ```
 
 ## Health
@@ -188,7 +212,12 @@ Example response:
   "hasAlerts": true,
   "alertCount": 1,
   "highestSeverity": "warning",
-  "analysisStatus": "hot-day"
+  "analysisStatus": "hot-day",
+  "isHotDay": true,
+  "isHighUsage": false,
+  "isDgUsed": false,
+  "isCriticalAlert": false,
+  "alertSummary": "Hot day detected"
 }
 ```
 
